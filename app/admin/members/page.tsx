@@ -69,34 +69,63 @@ export default function MembersPage() {
         </form>
       </div>
 
-      <div className="card responsive-table" style={{ padding: 0, marginBottom: '2rem' }}>
-        <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', textAlign: 'left' }}>
-          <thead style={{ background: 'var(--muted)' }}>
-            <tr>
-              <th style={{ padding: '1rem' }}>Name</th>
-              <th style={{ padding: '1rem' }}>Sanad ID</th>
-              <th style={{ padding: '1rem' }}>Email</th>
-              <th style={{ padding: '1rem' }}>Mobile</th>
-              <th style={{ padding: '1rem' }}>Payment Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
-            ) : data?.users.map((user: any) => (
-              <tr key={user._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: '1rem' }}>{user.firstName} {user.lastName}</td>
-                <td style={{ padding: '1rem' }}>{user.sanadId}</td>
-                <td style={{ padding: '1rem' }}>{user.email}</td>
-                <td style={{ padding: '1rem' }}>{user.mobileNumber}</td>
-                <td style={{ padding: '1rem' }}>{new Date(user.paymentDate).toLocaleDateString()}</td>
+      <div className="desktop-only">
+        <div className="card responsive-table" style={{ padding: 0, marginBottom: '2rem' }}>
+          <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead style={{ background: 'var(--muted)' }}>
+              <tr>
+                <th style={{ padding: '1rem' }}>Name</th>
+                <th style={{ padding: '1rem' }}>Sanad ID</th>
+                <th style={{ padding: '1rem' }}>Email</th>
+                <th style={{ padding: '1rem' }}>Mobile</th>
+                <th style={{ padding: '1rem' }}>Payment Date</th>
               </tr>
-            ))}
-            {!loading && data?.users.length === 0 && (
-              <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>No members found.</td></tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
+              ) : data?.users.map((user: any) => (
+                <tr key={user._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td style={{ padding: '1rem' }}>{user.firstName} {user.lastName}</td>
+                  <td style={{ padding: '1rem' }}>{user.sanadId}</td>
+                  <td style={{ padding: '1rem' }}>{user.email}</td>
+                  <td style={{ padding: '1rem' }}>{user.mobileNumber}</td>
+                  <td style={{ padding: '1rem' }}>{new Date(user.paymentDate).toLocaleDateString()}</td>
+                </tr>
+              ))}
+              {!loading && data?.users.length === 0 && (
+                <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>No members found.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="mobile-only">
+        <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
+          {loading ? (
+            <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
+          ) : data?.users.map((user: any) => (
+            <div key={user._id} className="card" style={{ padding: '1.25rem' }}>
+              <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+                {user.firstName} {user.lastName}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '0.5rem', fontSize: '0.875rem' }}>
+                <span style={{ color: 'var(--muted-foreground)' }}>Sanad ID:</span>
+                <span>{user.sanadId}</span>
+                <span style={{ color: 'var(--muted-foreground)' }}>Email:</span>
+                <span style={{ wordBreak: 'break-all' }}>{user.email}</span>
+                <span style={{ color: 'var(--muted-foreground)' }}>Mobile:</span>
+                <span>{user.mobileNumber}</span>
+                <span style={{ color: 'var(--muted-foreground)' }}>Paid on:</span>
+                <span>{new Date(user.paymentDate).toLocaleDateString()}</span>
+              </div>
+            </div>
+          ))}
+          {!loading && data?.users.length === 0 && (
+            <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>No members found.</div>
+          )}
+        </div>
       </div>
 
       {data?.pages > 1 && (
