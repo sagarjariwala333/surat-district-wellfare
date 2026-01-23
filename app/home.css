@@ -12,6 +12,13 @@
   margin-bottom: 4rem;
 }
 
+@media (max-width: 768px) {
+  .hero {
+    padding: 4rem 1rem;
+    margin-bottom: 2rem;
+  }
+}
+
 .hero-content {
   max-width: 800px;
   margin: 0 auto;
@@ -29,16 +36,36 @@
   opacity: 0.9;
 }
 
+@media (max-width: 640px) {
+  .hero p {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+}
+
 .hero-actions {
   display: flex;
   gap: 1rem;
   justify-content: center;
 }
 
+@media (max-width: 480px) {
+  .hero-actions {
+    flex-direction: column;
+  }
+}
+
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+}
+
+@media (max-width: 640px) {
+  .features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
 }
 
 .feature-card h3 {

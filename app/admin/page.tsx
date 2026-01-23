@@ -58,11 +58,11 @@ export default function AdminPage() {
 
       <section className="card glass" style={{ padding: '2rem', background: 'var(--muted)', borderRadius: 'var(--radius)' }}>
         <h3 style={{ marginBottom: '1rem' }}>Quick Actions</h3>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link href="/" className="btn btn-secondary">Go to Website</Link>
-          <Link href="/deposit" className="btn btn-secondary">Test Deposit Form</Link>
-          <Link href="/help" className="btn btn-secondary">Test Help Form</Link>
-          <button onClick={handleLogout} className="btn btn-secondary" style={{ backgroundColor: '#fee2e2', color: '#dc2626' }}>Logout</button>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+          <Link href="/" className="btn btn-secondary" style={{ flex: '1 1 200px' }}>Go to Website</Link>
+          <Link href="/deposit" className="btn btn-secondary" style={{ flex: '1 1 200px' }}>Test Deposit Form</Link>
+          <Link href="/help" className="btn btn-secondary" style={{ flex: '1 1 200px' }}>Test Help Form</Link>
+          <button onClick={handleLogout} className="btn btn-secondary" style={{ backgroundColor: '#fee2e2', color: '#dc2626', flex: '1 1 200px' }}>Logout</button>
         </div>
       </section>
     </div>

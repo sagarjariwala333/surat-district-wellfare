@@ -86,13 +86,13 @@ export default function DepositPage() {
       <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
         <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>Deposit Welfare Fee (₹2,000)</h2>
         <form onSubmit={handleSubmit} noValidate>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="input-group">
+          <div className="grid-cols-mobile" style={{ marginBottom: '1rem' }}>
+            <div className="input-group" style={{ marginBottom: 0 }}>
               <label>First Name</label>
               <input name="firstName" value={formData.firstName} onChange={handleChange} />
               {errors.firstName && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.firstName}</span>}
             </div>
-            <div className="input-group">
+            <div className="input-group" style={{ marginBottom: 0 }}>
               <label>Last Name</label>
               <input name="lastName" value={formData.lastName} onChange={handleChange} />
               {errors.lastName && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.lastName}</span>}

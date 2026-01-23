@@ -48,7 +48,7 @@ export default function MembersPage() {
       </div>
 
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <form onSubmit={handleSearch} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', alignItems: 'end' }}>
+        <form onSubmit={handleSearch} className="grid-cols-mobile" style={{ alignItems: 'end' }}>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label>Search Members</label>
             <input 
@@ -59,18 +59,18 @@ export default function MembersPage() {
           </div>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label>From Date</label>
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ width: '100%' }} />
           </div>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label>To Date</label>
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ width: '100%' }} />
           </div>
-          <button type="submit" className="btn btn-primary">Search</button>
+          <button type="submit" className="btn btn-primary" style={{ height: '3rem' }}>Search</button>
         </form>
       </div>
 
-      <div className="card" style={{ padding: 0, overflowX: 'auto', marginBottom: '2rem' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+      <div className="card responsive-table" style={{ padding: 0, marginBottom: '2rem' }}>
+        <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead style={{ background: 'var(--muted)' }}>
             <tr>
               <th style={{ padding: '1rem' }}>Name</th>

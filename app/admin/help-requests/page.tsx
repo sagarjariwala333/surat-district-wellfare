@@ -46,7 +46,7 @@ export default function HelpRequestsPage() {
       </div>
 
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <form onSubmit={handleSearch} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 120px', gap: '1rem', alignItems: 'end' }}>
+        <form onSubmit={handleSearch} className="grid-cols-mobile" style={{ alignItems: 'end' }}>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label>Search Requests</label>
             <input
@@ -68,7 +68,7 @@ export default function HelpRequestsPage() {
               <option value="rejected">Rejected</option>
             </select>
           </div>
-          <button type="submit" className="btn btn-primary">Search</button>
+          <button type="submit" className="btn btn-primary" style={{ height: '3rem' }}>Search</button>
         </form>
       </div>
 
