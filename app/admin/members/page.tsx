@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import DateRangePicker from '@/components/DateRangePicker';
 
 export default function MembersPage() {
   const [data, setData] = useState<any>(null);
@@ -40,6 +41,12 @@ export default function MembersPage() {
     fetchMembers();
   };
 
+  const handleDateChange = (start: string, end: string) => {
+    setStartDate(start);
+    setEndDate(end);
+    setPage(1);
+  };
+
   return (
     <div className="container" style={{ padding: '4rem 1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
@@ -51,19 +58,19 @@ export default function MembersPage() {
         <form onSubmit={handleSearch} className="grid-cols-mobile" style={{ alignItems: 'end' }}>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label>Search Members</label>
-            <input 
-              placeholder="Name, ID, Email..." 
-              value={search} 
-              onChange={(e) => setSearch(e.target.value)} 
+            <input
+              placeholder="Name, ID, Email..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <div className="input-group" style={{ marginBottom: 0 }}>
-            <label>From Date</label>
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={{ width: '100%' }} />
-          </div>
-          <div className="input-group" style={{ marginBottom: 0 }}>
-            <label>To Date</label>
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={{ width: '100%' }} />
+            <label>Date Filter (Single or Range)</label>
+            <DateRangePicker
+              startDate={startDate}
+              endDate={endDate}
+              onChange={handleDateChange}
+            />
           </div>
           <button type="submit" className="btn btn-primary" style={{ height: '3rem' }}>Search</button>
         </form>
@@ -130,8 +137,8 @@ export default function MembersPage() {
 
       {data?.pages > 1 && (
         <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
-          <button 
-            disabled={page === 1} 
+          <button
+            disabled={page === 1}
             onClick={() => setPage(page - 1)}
             className="btn btn-secondary"
             style={{ padding: '0.5rem 1rem' }}
@@ -141,8 +148,8 @@ export default function MembersPage() {
           <span style={{ display: 'flex', alignItems: 'center', padding: '0 1rem' }}>
             Page {page} of {data.pages}
           </span>
-          <button 
-            disabled={page === data.pages} 
+          <button
+            disabled={page === data.pages}
             onClick={() => setPage(page + 1)}
             className="btn btn-secondary"
             style={{ padding: '0.5rem 1rem' }}
