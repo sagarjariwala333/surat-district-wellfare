@@ -107,7 +107,7 @@ export default function DateRangePicker({
     <div className="date-range-container" ref={containerRef}>
       <div className="date-range-input" onClick={() => setIsOpen(!isOpen)}>
         <CalendarIcon size={18} className="icon-left" />
-        <span>{displayText()}</span>
+        <span className="calender-placeholder">{displayText()}</span>
         {startDate && <X size={16} className="clear-icon" onClick={clearDates} />}
       </div>
 
@@ -141,11 +141,17 @@ export default function DateRangePicker({
           width: 100%;
         }
 
+        .calender-placeholder {
+          color: var(--muted-foreground);
+          margin-left: 1rem;
+          margin-right: 1rem;
+        }
+
         .date-range-input {
           position: relative;
           display: flex;
           align-items: center;
-          padding: 0.85rem 1rem 0.85rem 3rem;
+          padding: 0.85rem 1rem 0.85rem 1rem;
           border: 1px solid var(--border);
           border-radius: 12px;
           background: var(--card);
@@ -246,9 +252,9 @@ export default function DateRangePicker({
         }
 
         .calendar-day.selected {
-          background: var(--primary);
-          color: white;
-          font-weight: 600;
+          background: !important #876;
+          color: black !important;
+          font-weight: 600 !important;
         }
 
         .animate-in {
