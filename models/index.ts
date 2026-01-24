@@ -22,3 +22,11 @@ const HelpRequestSchema = new Schema({
 }, { timestamps: true });
 
 export const HelpRequest = models.HelpRequest || model('HelpRequest', HelpRequestSchema);
+
+const AdminSchema = new Schema({
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true }, // Hashed password
+}, { timestamps: true });
+
+export const Admin = models.Admin || model('Admin', AdminSchema);
+

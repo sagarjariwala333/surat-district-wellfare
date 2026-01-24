@@ -2,22 +2,35 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { encrypt } from '@/lib/auth';
 import { cookies } from 'next/headers';
+import dbConnect from '@/lib/db';
+import { Admin } from '@/models';
 
 export async function POST(request: NextRequest) {
   try {
     const { username, password } = await request.json();
 
+    // Try environment variables first (legacy/override)
     const adminUsername = process.env.ADMIN_USERNAME;
     const adminPasswordHash = process.env.ADMIN_PASSWORD_HASH;
 
-    if (!adminUsername || !adminPasswordHash) {
-      return NextResponse.json(
-        { message: 'Admin credentials not configured' },
-        { status: 500 }
-      );
+    let isAuthenticated = false;
+
+    if (adminUsername && adminPasswordHash) {
+      if (username === adminUsername && bcrypt.compareSync(password, adminPasswordHash)) {
+        isAuthenticated = true;
+      }
     }
 
-    if (username === adminUsername && bcrypt.compareSync(password, adminPasswordHash)) {
+    // If not authenticated by env vars, try database
+    if (!isAuthenticated) {
+      await dbConnect();
+      const admin = await Admin.findOne({ username });
+      if (admin && bcrypt.compareSync(password, admin.password)) {
+        isAuthenticated = true;
+      }
+    }
+
+    if (isAuthenticated) {
       // Create session
       const expires = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 hours
       const session = await encrypt({ username, expires });
@@ -33,6 +46,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ message: 'Login successful' }, { status: 200 });
     }
+
 
     return NextResponse.json(
       { message: 'Invalid username or password' },

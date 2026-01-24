@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/surat_welfare';
 
@@ -21,8 +23,15 @@ const HelpRequestSchema = new mongoose.Schema({
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
 }, { timestamps: true });
 
+const AdminSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+}, { timestamps: true });
+
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 const HelpRequest = mongoose.models.HelpRequest || mongoose.model('HelpRequest', HelpRequestSchema);
+const Admin = mongoose.models.Admin || mongoose.model('Admin', AdminSchema);
+
 
 const users = [
   { firstName: 'Rajesh', lastName: 'Mehta', email: 'rajesh.mehta@example.com', mobileNumber: '9876543210', sanadId: 'G/123/2010', age: 45, paidAmount: 2000, isPaid: true, paymentDate: new Date('2026-01-01') },
@@ -61,7 +70,18 @@ const seed = async () => {
     // Clear existing data
     await User.deleteMany({});
     await HelpRequest.deleteMany({});
+    await Admin.deleteMany({});
     console.log('Cleared existing data');
+
+    // Add admin user
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync('admin123', salt);
+    await Admin.create({
+      username: 'admin',
+      password: hashedPassword
+    });
+    console.log('Admin user seeded');
+
 
     // Insert new data
     await User.insertMany(users);
