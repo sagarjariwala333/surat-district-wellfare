@@ -20,6 +20,8 @@ export default function RootLayout({
           <nav style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
             <Link href="/deposit">Deposit</Link>
             <Link href="/help">Request Help</Link>
+            <Link href="/admin/members">Paid Members</Link>
+            <Link href="/admin/help-requests">Help Requests</Link>
             <Link href="/admin" className="btn btn-secondary" style={{ padding: '0.5rem 1rem' }}>Admin</Link>
           </nav>
         </header>
