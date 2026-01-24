@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import DateRangePicker from '@/components/DateRangePicker';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function MembersPage() {
   const [data, setData] = useState<any>(null);
@@ -12,11 +13,13 @@ export default function MembersPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  const debouncedSearch = useDebounce(search, 500);
+
   const fetchMembers = async () => {
     setLoading(true);
     const params = new URLSearchParams({
       page: page.toString(),
-      search,
+      search: debouncedSearch,
       startDate,
       endDate,
     });
@@ -33,13 +36,7 @@ export default function MembersPage() {
 
   useEffect(() => {
     fetchMembers();
-  }, [page, startDate, endDate]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPage(1);
-    fetchMembers();
-  };
+  }, [page, debouncedSearch, startDate, endDate]);
 
   const handleDateChange = (start: string, end: string) => {
     setStartDate(start);
@@ -51,17 +48,20 @@ export default function MembersPage() {
     <div className="container" style={{ padding: '4rem 1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1>Paid Members</h1>
-        <Link href="/admin" className="btn btn-secondary">Dashboard Home</Link>
       </div>
 
+
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <form onSubmit={handleSearch} className="grid-cols-mobile" style={{ alignItems: 'end' }}>
+        <div className="grid-cols-mobile" style={{ alignItems: 'end' }}>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label>Search Members</label>
             <input
               placeholder="Name, ID, Email..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
             />
           </div>
           <div className="input-group" style={{ marginBottom: 0 }}>
@@ -72,9 +72,9 @@ export default function MembersPage() {
               onChange={handleDateChange}
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ height: '3rem' }}>Search</button>
-        </form>
+        </div>
       </div>
+
 
       <div className="desktop-only">
         <div className="card responsive-table" style={{ padding: 0, marginBottom: '2rem' }}>

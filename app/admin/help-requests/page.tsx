@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function HelpRequestsPage() {
   const [data, setData] = useState<any>(null);
@@ -10,11 +11,13 @@ export default function HelpRequestsPage() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
 
+  const debouncedSearch = useDebounce(search, 500);
+
   const fetchRequests = async () => {
     setLoading(true);
     const params = new URLSearchParams({
       page: page.toString(),
-      search,
+      search: debouncedSearch,
       status,
     });
     try {
@@ -30,36 +33,36 @@ export default function HelpRequestsPage() {
 
   useEffect(() => {
     fetchRequests();
-  }, [page, status]);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setPage(1);
-    fetchRequests();
-  };
+  }, [page, debouncedSearch, status]);
 
   return (
     <div className="container" style={{ padding: '4rem 1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1>Financial Help Requests</h1>
-        <Link href="/admin" className="btn btn-secondary">Dashboard Home</Link>
       </div>
 
+
       <div className="card" style={{ marginBottom: '2rem' }}>
-        <form onSubmit={handleSearch} className="grid-cols-mobile" style={{ alignItems: 'end' }}>
+        <div className="grid-cols-mobile" style={{ alignItems: 'end' }}>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label>Search Requests</label>
             <input
               placeholder="Title, Description..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
             />
           </div>
           <div className="input-group" style={{ marginBottom: 0 }}>
             <label>Filter by Status</label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => {
+                setStatus(e.target.value);
+                setPage(1);
+              }}
               style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--foreground)' }}
             >
               <option value="">All Statuses</option>
@@ -68,9 +71,9 @@ export default function HelpRequestsPage() {
               <option value="rejected">Rejected</option>
             </select>
           </div>
-          <button type="submit" className="btn btn-primary" style={{ height: '3rem' }}>Search</button>
-        </form>
+        </div>
       </div>
+
 
       <div style={{ display: 'grid', gap: '1.5rem', marginBottom: '2rem' }}>
         {loading ? (
