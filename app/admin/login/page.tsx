@@ -28,7 +28,8 @@ export default function LoginPage() {
 
       if (res.ok) {
         router.push('/admin');
-        router.refresh();
+        router.push('/admin');
+        // router.refresh();
       } else {
         const data = await res.json();
         setError(data.message || 'Login failed');
@@ -75,7 +76,7 @@ export default function LoginPage() {
           <h1 style={{ fontSize: '1.875rem', fontWeight: '800', color: '#fff', marginBottom: '0.5rem' }}>Admin Portal</h1>
           <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.875rem' }}>Surat District Court Advocate Welfare Fund</p>
         </div>
-        
+
         {error && (
           <div className="animate-in" style={{
             backgroundColor: 'rgba(239, 68, 68, 0.2)',
