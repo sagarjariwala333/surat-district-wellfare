@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db';
 import { HelpRequest } from '@/models';
+import { sendWhatsAppMessage } from '@/lib/twilio';
+
 
 export async function POST(req: Request) {
   try {
@@ -25,6 +27,26 @@ export async function POST(req: Request) {
       mobileNumber,
       description
     });
+
+    // 1. Notify the Requester (using the mobile number from the form)
+    try {
+      const userMessage = `Hello! User having mobile number ${mobileNumber}, submitted help request related to "${title}".`;
+      await sendWhatsAppMessage(process.env.WHATSAPP_NUMBER ?? '+919723353062', userMessage);
+    } catch (err) {
+      console.error('Requester notification failed:', err);
+    }
+
+    // 2. Notify the Admin (if WHATSAPP_NUMBER is set in .env)
+    const adminNumber = process.env.WHATSAPP_NUMBER;
+    if (adminNumber) {
+      try {
+        const adminMessage = `New Help Request Submitted!\nTitle: ${title}\nMobile: ${mobileNumber}\nDescription: ${description.substring(0, 100)}...`;
+        await sendWhatsAppMessage(adminNumber, adminMessage);
+      } catch (err) {
+        console.error('Admin notification failed:', err);
+      }
+    }
+
 
     return NextResponse.json({ message: 'Success', request: newRequest }, { status: 201 });
   } catch (err: any) {
