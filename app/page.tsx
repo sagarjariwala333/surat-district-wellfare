@@ -16,7 +16,7 @@ export default function Home() {
               Ensuring financial security and support for our legal community. Deposit your annual fee or request emergency assistance.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button asChild variant="gold" size="xl" className="text-base">
+              <Button asChild size="xl" className="text-base">
                 <Link href="/deposit">Deposit ₹2,000 Fee</Link>
               </Button>
               <Button asChild variant="outline" size="xl" className="text-base bg-white/10 border-white/20 text-white hover:bg-white/20">
