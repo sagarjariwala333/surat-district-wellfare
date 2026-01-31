@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function DepositPage() {
   const [formData, setFormData] = useState({
@@ -82,47 +86,115 @@ export default function DepositPage() {
   };
 
   return (
-    <div className="container" style={{ padding: '4rem 1rem' }}>
-      <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <h2 style={{ marginBottom: '2rem', textAlign: 'center' }}>Deposit Welfare Fee (₹2,000)</h2>
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="grid-cols-mobile" style={{ marginBottom: '1rem' }}>
-            <div className="input-group" style={{ marginBottom: 0 }}>
-              <label>First Name</label>
-              <input name="firstName" value={formData.firstName} onChange={handleChange} />
-              {errors.firstName && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.firstName}</span>}
+    <div className="container max-w-2xl mx-auto py-16 px-4">
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Deposit Welfare Fee</CardTitle>
+          <CardDescription className="text-lg">
+            Annual contribution of ₹2,000 to the Advocate Welfare Fund
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className={errors.firstName ? 'border-destructive' : ''}
+                />
+                {errors.firstName && (
+                  <p className="text-sm text-destructive">{errors.firstName}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className={errors.lastName ? 'border-destructive' : ''}
+                />
+                {errors.lastName && (
+                  <p className="text-sm text-destructive">{errors.lastName}</p>
+                )}
+              </div>
             </div>
-            <div className="input-group" style={{ marginBottom: 0 }}>
-              <label>Last Name</label>
-              <input name="lastName" value={formData.lastName} onChange={handleChange} />
-              {errors.lastName && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.lastName}</span>}
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={errors.email ? 'border-destructive' : ''}
+              />
+              {errors.email && (
+                <p className="text-sm text-destructive">{errors.email}</p>
+              )}
             </div>
-          </div>
-          <div className="input-group">
-            <label>Email</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} />
-            {errors.email && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.email}</span>}
-          </div>
-          <div className="input-group">
-            <label>Mobile Number</label>
-            <input name="mobileNumber" value={formData.mobileNumber} onChange={handleChange} maxLength={10} />
-            {errors.mobileNumber && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.mobileNumber}</span>}
-          </div>
-          <div className="input-group">
-            <label>Sanad ID</label>
-            <input name="sanadId" value={formData.sanadId} onChange={handleChange} />
-            {errors.sanadId && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.sanadId}</span>}
-          </div>
-          <div className="input-group">
-            <label>Age</label>
-            <input type="number" name="age" value={formData.age} onChange={handleChange} />
-            {errors.age && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.age}</span>}
-          </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
-            {loading ? 'Processing...' : 'Pay ₹2,000'}
-          </button>
-        </form>
-      </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="mobileNumber">Mobile Number</Label>
+              <Input
+                id="mobileNumber"
+                name="mobileNumber"
+                value={formData.mobileNumber}
+                onChange={handleChange}
+                maxLength={10}
+                className={errors.mobileNumber ? 'border-destructive' : ''}
+              />
+              {errors.mobileNumber && (
+                <p className="text-sm text-destructive">{errors.mobileNumber}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="sanadId">Sanad ID</Label>
+              <Input
+                id="sanadId"
+                name="sanadId"
+                value={formData.sanadId}
+                onChange={handleChange}
+                className={errors.sanadId ? 'border-destructive' : ''}
+              />
+              {errors.sanadId && (
+                <p className="text-sm text-destructive">{errors.sanadId}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="age">Age</Label>
+              <Input
+                id="age"
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                className={errors.age ? 'border-destructive' : ''}
+              />
+              {errors.age && (
+                <p className="text-sm text-destructive">{errors.age}</p>
+              )}
+            </div>
+
+            <Button 
+              type="submit"  
+              size="lg" 
+              className="w-full" 
+              disabled={loading}
+            >
+              {loading ? 'Processing...' : 'Pay ₹2,000'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

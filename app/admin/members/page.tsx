@@ -4,6 +4,11 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import DateRangePicker from '@/components/DateRangePicker';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function MembersPage() {
   const [data, setData] = useState<any>(null);
@@ -45,117 +50,144 @@ export default function MembersPage() {
   };
 
   return (
-    <div className="container" style={{ padding: '4rem 1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1>Paid Members</h1>
+    <div className="container max-w-screen-xl mx-auto py-16 px-4">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Paid Members</h1>
       </div>
 
-
-      <div className="card" style={{ marginBottom: '2rem' }}>
-        <div className="grid-cols-mobile" style={{ alignItems: 'end' }}>
-          <div className="input-group" style={{ marginBottom: 0 }}>
-            <label>Search Members</label>
-            <input
-              placeholder="Name, ID, Email..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
-              }}
-            />
+      {/* Filters */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Search & Filter</CardTitle>
+          <CardDescription>Find members by name, ID, email, or filter by payment date</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="search">Search Members</Label>
+              <Input
+                id="search"
+                placeholder="Name, ID, Email..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Date Filter (Single or Range)</Label>
+              <DateRangePicker
+                startDate={startDate}
+                endDate={endDate}
+                onChange={handleDateChange}
+              />
+            </div>
           </div>
-          <div className="input-group" style={{ marginBottom: 0 }}>
-            <label>Date Filter (Single or Range)</label>
-            <DateRangePicker
-              startDate={startDate}
-              endDate={endDate}
-              onChange={handleDateChange}
-            />
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-
-      <div className="desktop-only">
-        <div className="card responsive-table" style={{ padding: 0, marginBottom: '2rem' }}>
-          <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead style={{ background: 'var(--muted)' }}>
-              <tr>
-                <th style={{ padding: '1rem' }}>Name</th>
-                <th style={{ padding: '1rem' }}>Sanad ID</th>
-                <th style={{ padding: '1rem' }}>Email</th>
-                <th style={{ padding: '1rem' }}>Mobile</th>
-                <th style={{ padding: '1rem' }}>Payment Date</th>
-              </tr>
-            </thead>
-            <tbody>
+      {/* Desktop Table */}
+      <div className="hidden md:block">
+        <Card>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Sanad ID</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Mobile</TableHead>
+                <TableHead>Payment Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {loading ? (
-                <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>Loading...</td></tr>
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8">
+                    Loading...
+                  </TableCell>
+                </TableRow>
               ) : data?.users.map((user: any) => (
-                <tr key={user._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td style={{ padding: '1rem' }}>{user.firstName} {user.lastName}</td>
-                  <td style={{ padding: '1rem' }}>{user.sanadId}</td>
-                  <td style={{ padding: '1rem' }}>{user.email}</td>
-                  <td style={{ padding: '1rem' }}>{user.mobileNumber}</td>
-                  <td style={{ padding: '1rem' }}>{new Date(user.paymentDate).toLocaleDateString()}</td>
-                </tr>
+                <TableRow key={user._id}>
+                  <TableCell className="font-medium">
+                    {user.firstName} {user.lastName}
+                  </TableCell>
+                  <TableCell>{user.sanadId}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.mobileNumber}</TableCell>
+                  <TableCell>{new Date(user.paymentDate).toLocaleDateString()}</TableCell>
+                </TableRow>
               ))}
               {!loading && data?.users.length === 0 && (
-                <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center' }}>No members found.</td></tr>
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-8">
+                    No members found.
+                  </TableCell>
+                </TableRow>
               )}
-            </tbody>
-          </table>
-        </div>
+            </TableBody>
+          </Table>
+        </Card>
       </div>
 
-      <div className="mobile-only">
-        <div style={{ display: 'grid', gap: '1rem', marginBottom: '2rem' }}>
-          {loading ? (
-            <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>Loading...</div>
-          ) : data?.users.map((user: any) => (
-            <div key={user._id} className="card" style={{ padding: '1.25rem' }}>
-              <div style={{ fontWeight: 'bold', fontSize: '1.1rem', color: 'var(--primary)', marginBottom: '0.5rem' }}>
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {loading ? (
+          <Card>
+            <CardContent className="text-center py-8">
+              Loading...
+            </CardContent>
+          </Card>
+        ) : data?.users.map((user: any) => (
+          <Card key={user._id}>
+            <CardHeader>
+              <CardTitle className="text-lg text-primary">
                 {user.firstName} {user.lastName}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '0.5rem', fontSize: '0.875rem' }}>
-                <span style={{ color: 'var(--muted-foreground)' }}>Sanad ID:</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-[80px_1fr] gap-2 text-sm">
+                <span className="text-muted-foreground">Sanad ID:</span>
                 <span>{user.sanadId}</span>
-                <span style={{ color: 'var(--muted-foreground)' }}>Email:</span>
-                <span style={{ wordBreak: 'break-all' }}>{user.email}</span>
-                <span style={{ color: 'var(--muted-foreground)' }}>Mobile:</span>
+                <span className="text-muted-foreground">Email:</span>
+                <span className="break-all">{user.email}</span>
+                <span className="text-muted-foreground">Mobile:</span>
                 <span>{user.mobileNumber}</span>
-                <span style={{ color: 'var(--muted-foreground)' }}>Paid on:</span>
+                <span className="text-muted-foreground">Paid on:</span>
                 <span>{new Date(user.paymentDate).toLocaleDateString()}</span>
               </div>
-            </div>
-          ))}
-          {!loading && data?.users.length === 0 && (
-            <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>No members found.</div>
-          )}
-        </div>
+            </CardContent>
+          </Card>
+        ))}
+        {!loading && data?.users.length === 0 && (
+          <Card>
+            <CardContent className="text-center py-8">
+              No members found.
+            </CardContent>
+          </Card>
+        )}
       </div>
 
+      {/* Pagination */}
       {data?.pages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
-          <button
+        <div className="flex justify-center items-center gap-2 mt-8">
+          <Button
+            variant="outline"
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
-            className="btn btn-secondary"
-            style={{ padding: '0.5rem 1rem' }}
           >
-            Prev
-          </button>
-          <span style={{ display: 'flex', alignItems: 'center', padding: '0 1rem' }}>
+            Previous
+          </Button>
+          <span className="px-4 py-2 text-sm">
             Page {page} of {data.pages}
           </span>
-          <button
+          <Button
+            variant="outline"
             disabled={page === data.pages}
             onClick={() => setPage(page + 1)}
-            className="btn btn-secondary"
-            style={{ padding: '0.5rem 1rem' }}
           >
             Next
-          </button>
+          </Button>
         </div>
       )}
     </div>

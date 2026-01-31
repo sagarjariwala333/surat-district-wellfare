@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Lock, Eye, EyeOff, ShieldCheck, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -42,153 +47,110 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="login-page" style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      background: 'linear-gradient(rgba(26, 42, 108, 0.9), rgba(26, 42, 108, 0.85)), url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1600&q=80")',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      position: 'relative',
-      overflow: 'hidden'
-    }}>
-      <div className="glass-card animate-in" style={{
-        width: '100%',
-        maxWidth: '440px',
-        padding: '3rem 2.5rem',
-        zIndex: 1,
-        borderRadius: '1.5rem',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <div style={{
-            display: 'inline-flex',
-            padding: '1rem',
-            borderRadius: '1rem',
-            background: 'rgba(255, 255, 255, 0.05)',
-            marginBottom: '1rem',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
-          }}>
-            <ShieldCheck size={32} color="#fff" />
+    <div className="min-h-screen flex items-center justify-center hero-gradient bg-cover bg-center relative overflow-hidden"
+         style={{
+           backgroundImage: 'linear-gradient(rgba(26, 42, 108, 0.9), rgba(26, 42, 108, 0.85)), url("https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1600&q=80")'
+         }}>
+      <Card className="w-full max-w-md mx-4 bg-white/5 backdrop-blur-xl border-white/15 shadow-2xl">
+        <CardHeader className="text-center space-y-4">
+          <div className="inline-flex p-4 rounded-xl bg-white/5 border border-white/10 mx-auto">
+            <ShieldCheck className="h-8 w-8 text-white" />
           </div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: '800', color: '#fff', marginBottom: '0.5rem' }}>Admin Portal</h1>
-          <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.875rem' }}>Surat District Court Advocate Welfare Fund</p>
-        </div>
+          <CardTitle className="text-3xl font-bold text-white">Admin Portal</CardTitle>
+          <CardDescription className="text-white/70">
+            Surat District Court Advocate Welfare Fund
+          </CardDescription>
+        </CardHeader>
+        
+        <CardContent className="space-y-6">
+          {error && (
+            <Alert variant="destructive" className="bg-red-500/20 border-red-500/30 animate-in fade-in-0">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription className="text-red-200">
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
 
-        {error && (
-          <div className="animate-in" style={{
-            backgroundColor: 'rgba(239, 68, 68, 0.2)',
-            color: '#f87171',
-            padding: '0.875rem 1rem',
-            borderRadius: '0.75rem',
-            marginBottom: '1.5rem',
-            fontSize: '0.875rem',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem'
-          }}>
-            <AlertCircle size={18} />
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label htmlFor="username" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Username</label>
-            <div className="input-wrapper">
-              <span className="icon-left">
-                <User size={18} color="#000" />
-              </span>
-              <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                placeholder="Enter your username"
-                autoComplete="username"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  color: '#fff'
-                }}
-              />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-white/80">Username</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  placeholder="Enter your username"
+                  autoComplete="username"
+                  className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/50"
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="input-group">
-            <label htmlFor="password" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>Password</label>
-            <div className="input-wrapper">
-              <span className="icon-left">
-                <Lock size={18} color="#000" />
-              </span>
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="Enter your password"
-                autoComplete="current-password"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  color: '#fff'
-                }}
-              />
-              <button
-                type="button"
-                className="icon-right"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-                style={{ color: 'rgba(255, 255, 255, 0.5)' }}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-white/80">Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Enter your password"
+                  autoComplete="current-password"
+                  className="pl-10 pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/50"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-white/50" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-white/50" />
+                  )}
+                </Button>
+              </div>
             </div>
+
+            <div className="flex justify-end">
+              <Button variant="link" className="text-xs text-white/60 hover:text-white/80 p-0 h-auto">
+                Forgot password?
+              </Button>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-12 text-base bg-primary hover:bg-primary/90 text-white"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  Authenticating...
+                </div>
+              ) : (
+                'Secure Login'
+              )}
+            </Button>
+          </form>
+
+          <div className="text-center pt-4">
+            <p className="text-xs text-white/50">
+              &copy; {new Date().getFullYear()} Surat District Court Welfare. <br />
+              All rights reserved.
+            </p>
           </div>
-
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
-            <a href="#" style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.6)', fontWeight: '500' }}>Forgot password?</a>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '0.875rem', fontSize: '1rem', height: '3.25rem', background: 'var(--primary)', color: '#fff' }}
-          >
-            {loading ? (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <svg className="animate-spin" viewBox="0 0 24 24" style={{ width: '1.25rem', height: '1.25rem' }}>
-                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" strokeDasharray="31.415, 31.415" strokeLinecap="round" style={{ opacity: 0.25 }} />
-                  <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" style={{ opacity: 0.75 }} />
-                </svg>
-                Authenticating...
-              </span>
-            ) : 'Secure Login'}
-          </button>
-        </form>
-
-        <div style={{ marginTop: '2.5rem', textAlign: 'center' }}>
-          <p style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)' }}>
-            &copy; {new Date().getFullYear()} Surat District Court Welfare. <br /> All rights reserved.
-          </p>
-        </div>
-      </div>
-
-      <style jsx>{`
-        .animate-spin {
-          animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+        </CardContent>
+      </Card>
     </div>
   );
 }

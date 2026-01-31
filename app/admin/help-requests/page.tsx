@@ -1,8 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useDebounce } from '@/hooks/useDebounce';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function HelpRequestsPage() {
   const [data, setData] = useState<any>(null);
@@ -35,88 +39,127 @@ export default function HelpRequestsPage() {
     fetchRequests();
   }, [page, debouncedSearch, status]);
 
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'approved': return 'default';
+      case 'rejected': return 'destructive';
+      default: return 'secondary';
+    }
+  };
+
   return (
-    <div className="container" style={{ padding: '4rem 1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1>Financial Help Requests</h1>
+    <div className="container max-w-screen-xl mx-auto py-16 px-4">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Financial Help Requests</h1>
       </div>
 
-
-      <div className="card" style={{ marginBottom: '2rem' }}>
-        <div className="grid-cols-mobile" style={{ alignItems: 'end' }}>
-          <div className="input-group" style={{ marginBottom: 0 }}>
-            <label>Search Requests</label>
-            <input
-              placeholder="Title, Description..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
+      {/* Filters */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Search & Filter</CardTitle>
+          <CardDescription>Find requests by title, description, or filter by status</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="search">Search Requests</Label>
+              <Input
+                id="search"
+                placeholder="Title, Description..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Filter by Status</Label>
+              <Select value={status || "all"} onValueChange={(value) => {
+                setStatus(value === "all" ? "" : value);
                 setPage(1);
-              }}
-            />
+              }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="approved">Approved</SelectItem>
+                  <SelectItem value="rejected">Rejected</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="input-group" style={{ marginBottom: 0 }}>
-            <label>Filter by Status</label>
-            <select
-              value={status}
-              onChange={(e) => {
-                setStatus(e.target.value);
-                setPage(1);
-              }}
-              style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--radius)', border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--foreground)' }}
-            >
-              <option value="">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-
-      <div style={{ display: 'grid', gap: '1.5rem', marginBottom: '2rem' }}>
+      {/* Requests List */}
+      <div className="space-y-6 mb-8">
         {loading ? (
-          <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>Loading requests...</div>
+          <Card>
+            <CardContent className="text-center py-8">
+              Loading requests...
+            </CardContent>
+          </Card>
         ) : data?.requests.map((req: any) => (
-          <div key={req._id} className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', alignItems: 'flex-start' }}>
-              <h3 style={{ color: 'var(--secondary)' }}>{req.title}</h3>
-              <span className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', textTransform: 'uppercase' }}>{req.status}</span>
-            </div>
-            <p style={{ marginBottom: '1rem', whiteSpace: 'pre-wrap' }}>{req.description}</p>
-            <div style={{ fontSize: '0.875rem', color: 'var(--muted-foreground)', display: 'flex', justifyContent: 'space-between' }}>
-              <div><strong>Mobile:</strong> {req.mobileNumber}</div>
-              <div><strong>Submitted:</strong> {new Date(req.createdAt).toLocaleDateString()}</div>
-            </div>
-          </div>
+          <Card key={req._id}>
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <CardTitle className="text-xl text-destructive">{req.title}</CardTitle>
+                <Button 
+                  variant={getStatusVariant(req.status)} 
+                  size="sm" 
+                  className="text-xs uppercase"
+                >
+                  {req.status}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="mb-4 whitespace-pre-wrap text-muted-foreground">
+                {req.description}
+              </p>
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <div>
+                  <strong>Mobile:</strong> {req.mobileNumber}
+                </div>
+                <div>
+                  <strong>Submitted:</strong> {new Date(req.createdAt).toLocaleDateString()}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         ))}
         {!loading && data?.requests.length === 0 && (
-          <div className="card" style={{ textAlign: 'center', padding: '2rem' }}>No help requests found.</div>
+          <Card>
+            <CardContent className="text-center py-8">
+              No help requests found.
+            </CardContent>
+          </Card>
         )}
       </div>
 
+      {/* Pagination */}
       {data?.pages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
-          <button
+        <div className="flex justify-center items-center gap-2">
+          <Button
+            variant="outline"
             disabled={page === 1}
             onClick={() => setPage(page - 1)}
-            className="btn btn-secondary"
-            style={{ padding: '0.5rem 1rem' }}
           >
-            Prev
-          </button>
-          <span style={{ display: 'flex', alignItems: 'center', padding: '0 1rem' }}>
+            Previous
+          </Button>
+          <span className="px-4 py-2 text-sm">
             Page {page} of {data.pages}
           </span>
-          <button
+          <Button
+            variant="outline"
             disabled={page === data.pages}
             onClick={() => setPage(page + 1)}
-            className="btn btn-secondary"
-            style={{ padding: '0.5rem 1rem' }}
           >
             Next
-          </button>
+          </Button>
         </div>
       )}
     </div>

@@ -2,6 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function HelpPage() {
   const [formData, setFormData] = useState({
@@ -68,33 +73,75 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="container" style={{ padding: '4rem 1rem' }}>
-      <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
-        <h2 style={{ marginBottom: '1rem', textAlign: 'center' }}>Request Financial Help</h2>
-        <p style={{ marginBottom: '2rem', textAlign: 'center', color: 'var(--muted-foreground)' }}>
-          Submit your request for emergency financial assistance (up to ₹5 Lakh).
-        </p>
-        <form onSubmit={handleSubmit} noValidate>
-          <div className="input-group">
-            <label>Help Title</label>
-            <input name="title" value={formData.title} placeholder="e.g. Emergency Medical Support" onChange={handleChange} />
-            {errors.title && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.title}</span>}
-          </div>
-          <div className="input-group">
-            <label>Mobile Number</label>
-            <input name="mobileNumber" value={formData.mobileNumber} placeholder="Your contact number" onChange={handleChange} maxLength={10} />
-            {errors.mobileNumber && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.mobileNumber}</span>}
-          </div>
-          <div className="input-group">
-            <label>Description</label>
-            <textarea name="description" value={formData.description} rows={5} placeholder="Describe your emergency and the support needed..." onChange={handleChange} />
-            {errors.description && <span style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.25rem' }}>{errors.description}</span>}
-          </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }} disabled={loading}>
-            {loading ? 'Submitting...' : 'Submit Help Request'}
-          </button>
-        </form>
-      </div>
+    <div className="container max-w-2xl mx-auto py-16 px-4">
+      <Card>
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl">Request Financial Help</CardTitle>
+          <CardDescription className="text-lg">
+            Submit your request for emergency financial assistance (up to ₹5 Lakh)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="title">Help Title</Label>
+              <Input
+                id="title"
+                name="title"
+                value={formData.title}
+                placeholder="e.g. Emergency Medical Support"
+                onChange={handleChange}
+                className={errors.title ? 'border-destructive' : ''}
+              />
+              {errors.title && (
+                <p className="text-sm text-destructive">{errors.title}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="mobileNumber">Mobile Number</Label>
+              <Input
+                id="mobileNumber"
+                name="mobileNumber"
+                value={formData.mobileNumber}
+                placeholder="Your contact number"
+                onChange={handleChange}
+                maxLength={10}
+                className={errors.mobileNumber ? 'border-destructive' : ''}
+              />
+              {errors.mobileNumber && (
+                <p className="text-sm text-destructive">{errors.mobileNumber}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                rows={5}
+                placeholder="Describe your emergency and the support needed..."
+                onChange={handleChange}
+                className={errors.description ? 'border-destructive' : ''}
+              />
+              {errors.description && (
+                <p className="text-sm text-destructive">{errors.description}</p>
+              )}
+            </div>
+
+            <Button 
+              type="submit" 
+              variant="hero" 
+              size="lg" 
+              className="w-full" 
+              disabled={loading}
+            >
+              {loading ? 'Submitting...' : 'Submit Help Request'}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
