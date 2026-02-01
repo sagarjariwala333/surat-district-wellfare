@@ -24,9 +24,9 @@ export default function Home() {
               <Button asChild variant="secondary" size="lg" className="text-base">
                 <Link href="/login">User Login</Link>
               </Button>
-              <Button asChild variant="ghost" size="lg" className="text-base text-white/80 hover:text-white hover:bg-white/10">
+              {/* <Button asChild variant="ghost" size="lg" className="text-base text-white/80 hover:text-white hover:bg-white/10">
                 <Link href="/register">Create Account</Link>
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

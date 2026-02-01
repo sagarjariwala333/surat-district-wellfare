@@ -27,17 +27,17 @@ export default function RootLayout({
             </Link>
 
             <nav className="hidden md:flex items-center space-x-6">
-              <Link
+              {/* <Link
                 href="/deposit"
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
                 Deposit
-              </Link>
+              </Link> */}
               <div className="relative group">
-                <button className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1">
+                {/* <button className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1">
                   Admin
                   <ChevronDown className="h-4 w-4" />
-                </button>
+                </button> */}
                 <div className="absolute top-full left-0 mt-2 w-64 bg-popover border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                   <div className="p-2">
                     <Link
