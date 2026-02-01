@@ -70,14 +70,14 @@ export default function DepositPage() {
 
   const checkExistingUser = async (email: string, sanadId: string) => {
     if (!email || !sanadId) return;
-    
+
     try {
       const res = await fetch('/api/user/check-existing', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, sanadId }),
       });
-      
+
       if (res.ok) {
         const data = await res.json();
         setIsExistingUser(data.exists);
@@ -115,20 +115,20 @@ export default function DepositPage() {
 
       if (res.ok) {
         const data = await res.json();
-        alert('Payment Successful! ₹2,000 deposited. Account created successfully!');
-        
+        alert('Enrollment Successful! Welcome to the Advocate Welfare Program!');
+
         // Auto-login the user after successful payment
         if (data.autoLogin) {
           router.push('/dashboard');
         } else {
-          router.push('/login?message=Payment successful! Please login to access your dashboard.');
+          router.push('/login?message=Enrollment successful! Please login to access your dashboard.');
         }
       } else {
         const error = await res.json();
         alert(error.message || 'Something went wrong');
       }
     } catch (err) {
-      alert('Failed to process payment');
+      alert('Failed to process enrollment');
     } finally {
       setLoading(false);
     }
@@ -137,7 +137,7 @@ export default function DepositPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
@@ -147,7 +147,7 @@ export default function DepositPage() {
     if (name === 'email' || name === 'sanadId') {
       const email = name === 'email' ? value : formData.email;
       const sanadId = name === 'sanadId' ? value : formData.sanadId;
-      
+
       if (email && sanadId) {
         checkExistingUser(email, sanadId);
       }
@@ -165,16 +165,16 @@ export default function DepositPage() {
     <div className="container max-w-2xl mx-auto py-16 px-4">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Deposit Welfare Fee</CardTitle>
+          <CardTitle className="text-2xl">Advocate Insurance & Support</CardTitle>
           <CardDescription className="text-lg">
-            Annual contribution of ₹2,000 to the Advocate Welfare Fund
+            Join our welfare program for legal aid and support services
           </CardDescription>
         </CardHeader>
         <CardContent>
           {isExistingUser && (
             <Alert className="mb-6 bg-blue-50 border-blue-200">
               <AlertDescription className="text-blue-800">
-                We found an existing account with this email/Sanad ID. Your payment will be added to your existing account.
+                We found an existing account. Your enrollment will be updated with this payment.
               </AlertDescription>
             </Alert>
           )}
@@ -199,7 +199,7 @@ export default function DepositPage() {
                   <p className="text-sm text-destructive">{errors.firstName}</p>
                 )}
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="lastName">Last Name</Label>
                 <Input
@@ -301,9 +301,9 @@ export default function DepositPage() {
             {!isExistingUser && (
               <>
                 <div className="border-t pt-6">
-                  <h3 className="text-lg font-semibold mb-4">Create Account Password</h3>
+                  <h3 className="text-lg font-semibold mb-4">Account Access</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Set a password to access your welfare account dashboard
+                    Create a password to access your welfare dashboard and track benefits
                   </p>
                 </div>
 
@@ -377,26 +377,26 @@ export default function DepositPage() {
 
             <div className="border-t pt-6">
               <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <h4 className="font-semibold text-lg">Payment Summary</h4>
+                <h4 className="font-semibold text-lg">Enrollment Summary</h4>
                 <div className="flex justify-between items-center mt-2">
-                  <span>Annual Welfare Fee</span>
+                  <span>Welfare Program Deposit</span>
                   <span className="font-bold text-xl">₹2,000</span>
                 </div>
               </div>
 
-              <Button 
-                type="submit"  
-                size="lg" 
-                className="w-full" 
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full"
                 disabled={loading}
               >
-                {loading ? 'Processing Payment...' : `Pay ₹2,000 ${isExistingUser ? '& Update Account' : '& Create Account'}`}
+                {loading ? 'Processing...' : `Pay ₹2000 Deposit`}
               </Button>
             </div>
 
             {!isExistingUser && (
               <p className="text-xs text-muted-foreground text-center">
-                By proceeding, you agree to create an account and can access your dashboard after payment.
+                By proceeding, you agree to join the welfare program and can access benefits after enrollment.
               </p>
             )}
           </form>

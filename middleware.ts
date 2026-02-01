@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Protect user dashboard and change password routes
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/change-password')) {
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/change-password') || pathname === '/help') {
     const userSession = request.cookies.get('user_session')?.value;
     
     if (!userSession) {
@@ -42,5 +42,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/dashboard/:path*', '/change-password'],
+  matcher: ['/admin/:path*', '/dashboard/:path*', '/change-password', '/help'],
 };

@@ -33,12 +33,6 @@ export default function RootLayout({
               >
                 Deposit
               </Link>
-              <Link
-                href="/help"
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                Request Help
-              </Link>
               <div className="relative group">
                 <button className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1">
                   Admin

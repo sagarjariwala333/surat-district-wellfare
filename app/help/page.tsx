@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Lock } from 'lucide-react';
 
 export default function HelpPage() {
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ export default function HelpPage() {
   const [success, setSuccess] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const router = useRouter();
   const searchParams = useSearchParams();
   const isEmbedded = searchParams.get('embedded') === 'true';
@@ -40,9 +42,13 @@ export default function HelpPage() {
           ...prev,
           mobileNumber: profile.mobileNumber || ''
         }));
+      } else {
+        setIsAuthenticated(false);
       }
     } catch (err) {
-      // User not authenticated, that's fine for public access
+      setIsAuthenticated(false);
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -71,10 +77,7 @@ export default function HelpPage() {
     setLoading(true);
 
     try {
-      // Use user-specific endpoint if authenticated, otherwise use public endpoint
-      const endpoint = isAuthenticated ? '/api/user/help-requests' : '/api/help';
-      
-      const res = await fetch(endpoint, {
+      const res = await fetch('/api/user/help-requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -90,11 +93,7 @@ export default function HelpPage() {
         
         if (!isEmbedded) {
           setTimeout(() => {
-            if (isAuthenticated) {
-              router.push('/dashboard');
-            } else {
-              router.push('/');
-            }
+            router.push('/dashboard');
           }, 2000);
         }
       } else {
@@ -117,6 +116,53 @@ export default function HelpPage() {
     }
   };
 
+  // Show loading while checking authentication
+  if (authLoading) {
+    return (
+      <div className={`${isEmbedded ? '' : 'container max-w-2xl mx-auto py-16 px-4'}`}>
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect non-authenticated users to login (unless embedded)
+  if (!isAuthenticated && !isEmbedded) {
+    return (
+      <div className="container max-w-2xl mx-auto py-16 px-4">
+        <Card>
+          <CardContent className="text-center py-12">
+            <div className="inline-flex p-4 rounded-full bg-blue-100 mb-6">
+              <Lock className="h-8 w-8 text-blue-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Login Required</h2>
+            <p className="text-gray-600 mb-6">
+              You need to be logged in to request financial assistance. This feature is only available to registered members.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild>
+                <Link href="/login">Login to Your Account</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href="/register">Create New Account</Link>
+              </Button>
+            </div>
+            <div className="mt-6 pt-6 border-t">
+              <p className="text-sm text-gray-500">
+                Don't have an account? You can create one by making a payment at{' '}
+                <Link href="/deposit" className="text-primary hover:underline">
+                  the deposit page
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show success message
   if (success) {
     return (
       <div className={`${isEmbedded ? '' : 'container max-w-2xl mx-auto py-16 px-4'}`}>
@@ -129,26 +175,23 @@ export default function HelpPage() {
             <p className="text-gray-600 mb-4">
               Your help request has been submitted and will be reviewed by our admin team.
             </p>
-            {isAuthenticated && (
-              <p className="text-sm text-gray-500">
-                You can track the status of your request in your dashboard.
-              </p>
-            )}
+            <p className="text-sm text-gray-500">
+              You can track the status of your request in your dashboard.
+            </p>
           </CardContent>
         </Card>
       </div>
     );
   }
 
+  // Show the form for authenticated users
   return (
     <div className={`${isEmbedded ? '' : 'container max-w-2xl mx-auto py-16 px-4'}`}>
-      {isAuthenticated && (
-        <Alert className="mb-6 bg-blue-50 border-blue-200">
-          <AlertDescription className="text-blue-800">
-            Welcome back, {userProfile?.firstName}! Your request will be linked to your account.
-          </AlertDescription>
-        </Alert>
-      )}
+      <Alert className="mb-6 bg-blue-50 border-blue-200">
+        <AlertDescription className="text-blue-800">
+          Welcome back, {userProfile?.firstName}! Your request will be linked to your account.
+        </AlertDescription>
+      </Alert>
       
       <Card>
         <CardHeader className="text-center">
@@ -184,14 +227,12 @@ export default function HelpPage() {
                 onChange={handleChange}
                 maxLength={10}
                 className={errors.mobileNumber ? 'border-destructive' : ''}
-                disabled={isAuthenticated} // Disable if user is logged in
+                disabled={true} // Always disabled for logged-in users
               />
               {errors.mobileNumber && (
                 <p className="text-sm text-destructive">{errors.mobileNumber}</p>
               )}
-              {isAuthenticated && (
-                <p className="text-xs text-gray-500">Using your registered mobile number</p>
-              )}
+              <p className="text-xs text-gray-500">Using your registered mobile number</p>
             </div>
 
             <div className="space-y-2">

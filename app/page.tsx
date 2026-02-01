@@ -15,12 +15,9 @@ export default function Home() {
             <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto">
               Ensuring financial security and support for our legal community. Deposit your annual fee or request emergency assistance.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <div className="flex justify-center pt-4">
               <Button asChild size="xl" className="text-base">
                 <Link href="/deposit">Deposit ₹2,000 Fee</Link>
-              </Button>
-              <Button asChild variant="outline" size="xl" className="text-base bg-white/10 border-white/20 text-white hover:bg-white/20">
-                <Link href="/help">Request Financial Help</Link>
               </Button>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
@@ -52,11 +49,11 @@ export default function Home() {
 
             <Card className="text-center">
               <CardHeader>
-                <CardTitle className="text-xl text-primary">Emergency Assistance</CardTitle>
+                <CardTitle className="text-xl text-primary">Member Benefits</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  Get up to ₹5 Lakh in financial support for medical emergencies and other critical needs.
+                  Registered members get access to financial assistance requests and account management features.
                 </CardDescription>
               </CardContent>
             </Card>

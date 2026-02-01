@@ -3,15 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  User, 
-  CreditCard, 
-  Calendar, 
-  Phone, 
-  Mail, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+import {
+  User,
+  CreditCard,
+  Calendar,
+  Phone,
+  Mail,
+  CheckCircle,
+  XCircle,
+  Clock,
   HelpCircle,
   LogOut,
   Settings,
@@ -23,6 +23,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface UserData {
   _id: string;
@@ -56,6 +59,17 @@ export default function DashboardPage() {
   const [helpRequests, setHelpRequests] = useState<HelpRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // Help request form state
+  const [helpFormData, setHelpFormData] = useState({
+    title: '',
+    description: '',
+    mobileNumber: '',
+  });
+  const [helpFormErrors, setHelpFormErrors] = useState<Record<string, string>>({});
+  const [helpFormLoading, setHelpFormLoading] = useState(false);
+  const [helpFormSuccess, setHelpFormSuccess] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -69,6 +83,11 @@ export default function DashboardPage() {
       if (res.ok) {
         const data = await res.json();
         setUserData(data);
+        // Pre-fill mobile number in help form
+        setHelpFormData(prev => ({
+          ...prev,
+          mobileNumber: data.mobileNumber || ''
+        }));
       } else if (res.status === 401) {
         router.push('/login');
       } else {
@@ -124,6 +143,72 @@ export default function DashboardPage() {
     }
   };
 
+  // Help form functions
+  const validateHelpForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    if (helpFormData.title.trim().length < 5) {
+      newErrors.title = 'Title must be at least 5 characters';
+    }
+    const mobileRegex = /^\d{10}$/;
+    if (!mobileRegex.test(helpFormData.mobileNumber)) {
+      newErrors.mobileNumber = 'Mobile number must be exactly 10 digits';
+    }
+    if (helpFormData.description.trim().length < 20) {
+      newErrors.description = 'Please provide a more detailed description (min 20 characters)';
+    }
+
+    setHelpFormErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleHelpFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validateHelpForm()) return;
+
+    setHelpFormLoading(true);
+
+    try {
+      const res = await fetch('/api/user/help-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(helpFormData),
+      });
+
+      if (res.ok) {
+        setHelpFormSuccess(true);
+        setHelpFormData({
+          title: '',
+          description: '',
+          mobileNumber: userData?.mobileNumber || '',
+        });
+        // Refresh help requests list
+        fetchHelpRequests();
+        // Auto-switch to help requests tab after 2 seconds
+        setTimeout(() => {
+          setHelpFormSuccess(false);
+          document.querySelector('[value="help-requests"]')?.click();
+        }, 2000);
+      } else {
+        const error = await res.json();
+        alert(error.message || 'Something went wrong');
+      }
+    } catch (err) {
+      alert('Failed to submit request');
+    } finally {
+      setHelpFormLoading(false);
+    }
+  };
+
+  const handleHelpFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setHelpFormData({ ...helpFormData, [name]: value });
+    // Clear error when user starts typing
+    if (helpFormErrors[name]) {
+      setHelpFormErrors({ ...helpFormErrors, [name]: '' });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -162,7 +247,7 @@ export default function DashboardPage() {
               <Button variant="outline" size="sm" asChild>
                 <Link href="/change-password">
                   <Settings className="h-4 w-4 mr-2" />
-                  Settings
+                  Change Password
                 </Link>
               </Button>
               <Button variant="outline" size="sm" onClick={handleLogout}>
@@ -240,7 +325,7 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle>Annual Fee Payment</CardTitle>
                   <CardDescription>
-                    {userData.isPaid 
+                    {userData.isPaid
                       ? `You have paid ₹${userData.paidAmount} on ${new Date(userData.paymentDate!).toLocaleDateString()}`
                       : 'Pay your annual welfare fee of ₹2,000'
                     }
@@ -368,11 +453,94 @@ export default function DashboardPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <iframe 
-                  src="/help?embedded=true" 
-                  className="w-full h-96 border-0 rounded-lg"
-                  title="Help Request Form"
-                />
+                {helpFormSuccess ? (
+                  <div className="text-center py-8">
+                    <div className="inline-flex p-4 rounded-full bg-green-100 mb-4">
+                      <CheckCircle className="h-8 w-8 text-green-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-green-800 mb-2">Request Submitted Successfully!</h3>
+                    <p className="text-gray-600 mb-4">
+                      Your help request has been submitted and will be reviewed by our admin team.
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Redirecting to your help requests...
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <Alert className="mb-6 bg-blue-50 border-blue-200">
+                      <AlertDescription className="text-blue-800">
+                        Welcome, {userData?.firstName}! Your request will be linked to your account.
+                      </AlertDescription>
+                    </Alert>
+
+                    <form onSubmit={handleHelpFormSubmit} noValidate className="space-y-6">
+                      <div className="space-y-2">
+                        <Label htmlFor="help-title">Help Title</Label>
+                        <Input
+                          id="help-title"
+                          name="title"
+                          value={helpFormData.title}
+                          placeholder="e.g. Emergency Medical Support"
+                          onChange={handleHelpFormChange}
+                          className={helpFormErrors.title ? 'border-destructive' : ''}
+                        />
+                        {helpFormErrors.title && (
+                          <p className="text-sm text-destructive">{helpFormErrors.title}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="help-mobile">Mobile Number</Label>
+                        <Input
+                          id="help-mobile"
+                          name="mobileNumber"
+                          value={helpFormData.mobileNumber}
+                          placeholder="Your contact number"
+                          onChange={handleHelpFormChange}
+                          maxLength={10}
+                          className={helpFormErrors.mobileNumber ? 'border-destructive' : ''}
+                          disabled={true} // Always disabled for logged-in users
+                        />
+                        {helpFormErrors.mobileNumber && (
+                          <p className="text-sm text-destructive">{helpFormErrors.mobileNumber}</p>
+                        )}
+                        <p className="text-xs text-gray-500">Using your registered mobile number</p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="help-description">Description</Label>
+                        <Textarea
+                          id="help-description"
+                          name="description"
+                          value={helpFormData.description}
+                          rows={5}
+                          placeholder="Describe your emergency and the support needed..."
+                          onChange={handleHelpFormChange}
+                          className={helpFormErrors.description ? 'border-destructive' : ''}
+                        />
+                        {helpFormErrors.description && (
+                          <p className="text-sm text-destructive">{helpFormErrors.description}</p>
+                        )}
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={helpFormLoading}
+                      >
+                        {helpFormLoading ? (
+                          <div className="flex items-center gap-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            Submitting...
+                          </div>
+                        ) : (
+                          'Submit Help Request'
+                        )}
+                      </Button>
+                    </form>
+                  </>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
