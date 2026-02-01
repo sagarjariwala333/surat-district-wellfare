@@ -23,6 +23,14 @@ export default function Home() {
                 <Link href="/help">Request Financial Help</Link>
               </Button>
             </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+              <Button asChild variant="secondary" size="lg" className="text-base">
+                <Link href="/login">User Login</Link>
+              </Button>
+              <Button asChild variant="ghost" size="lg" className="text-base text-white/80 hover:text-white hover:bg-white/10">
+                <Link href="/register">Create Account</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

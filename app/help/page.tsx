@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle } from 'lucide-react';
 
 export default function HelpPage() {
   const [formData, setFormData] = useState({
@@ -16,7 +18,33 @@ export default function HelpPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isEmbedded = searchParams.get('embedded') === 'true';
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const res = await fetch('/api/user/profile');
+      if (res.ok) {
+        const profile = await res.json();
+        setIsAuthenticated(true);
+        setUserProfile(profile);
+        setFormData(prev => ({
+          ...prev,
+          mobileNumber: profile.mobileNumber || ''
+        }));
+      }
+    } catch (err) {
+      // User not authenticated, that's fine for public access
+    }
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -43,15 +71,32 @@ export default function HelpPage() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/help', {
+      // Use user-specific endpoint if authenticated, otherwise use public endpoint
+      const endpoint = isAuthenticated ? '/api/user/help-requests' : '/api/help';
+      
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
       if (res.ok) {
-        alert('Help Request Submitted Successfully!');
-        router.push('/');
+        setSuccess(true);
+        setFormData({
+          title: '',
+          description: '',
+          mobileNumber: userProfile?.mobileNumber || '',
+        });
+        
+        if (!isEmbedded) {
+          setTimeout(() => {
+            if (isAuthenticated) {
+              router.push('/dashboard');
+            } else {
+              router.push('/');
+            }
+          }, 2000);
+        }
       } else {
         const error = await res.json();
         alert(error.message || 'Something went wrong');
@@ -72,8 +117,39 @@ export default function HelpPage() {
     }
   };
 
+  if (success) {
+    return (
+      <div className={`${isEmbedded ? '' : 'container max-w-2xl mx-auto py-16 px-4'}`}>
+        <Card>
+          <CardContent className="text-center py-8">
+            <div className="inline-flex p-4 rounded-full bg-green-100 mb-4">
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-green-800 mb-2">Request Submitted Successfully!</h2>
+            <p className="text-gray-600 mb-4">
+              Your help request has been submitted and will be reviewed by our admin team.
+            </p>
+            {isAuthenticated && (
+              <p className="text-sm text-gray-500">
+                You can track the status of your request in your dashboard.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div className="container max-w-2xl mx-auto py-16 px-4">
+    <div className={`${isEmbedded ? '' : 'container max-w-2xl mx-auto py-16 px-4'}`}>
+      {isAuthenticated && (
+        <Alert className="mb-6 bg-blue-50 border-blue-200">
+          <AlertDescription className="text-blue-800">
+            Welcome back, {userProfile?.firstName}! Your request will be linked to your account.
+          </AlertDescription>
+        </Alert>
+      )}
+      
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Request Financial Help</CardTitle>
@@ -108,9 +184,13 @@ export default function HelpPage() {
                 onChange={handleChange}
                 maxLength={10}
                 className={errors.mobileNumber ? 'border-destructive' : ''}
+                disabled={isAuthenticated} // Disable if user is logged in
               />
               {errors.mobileNumber && (
                 <p className="text-sm text-destructive">{errors.mobileNumber}</p>
+              )}
+              {isAuthenticated && (
+                <p className="text-xs text-gray-500">Using your registered mobile number</p>
               )}
             </div>
 

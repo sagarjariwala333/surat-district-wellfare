@@ -19,6 +19,12 @@ export async function decrypt(input: string): Promise<any> {
   return payload;
 }
 
+export async function getUserSession() {
+  const session = (await cookies()).get('user_session')?.value;
+  if (!session) return null;
+  return await decrypt(session);
+}
+
 export async function getSession() {
   const session = (await cookies()).get('admin_session')?.value;
   if (!session) return null;

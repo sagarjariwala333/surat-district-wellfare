@@ -21,9 +21,26 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect user dashboard and change password routes
+  if (pathname.startsWith('/dashboard') || pathname.startsWith('/change-password')) {
+    const userSession = request.cookies.get('user_session')?.value;
+    
+    if (!userSession) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+    
+    try {
+      await decrypt(userSession);
+      return NextResponse.next();
+    } catch (error) {
+      console.error('User session decryption failed:', error);
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: ['/admin/:path*', '/dashboard/:path*', '/change-password'],
 };

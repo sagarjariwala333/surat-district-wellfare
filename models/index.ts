@@ -7,9 +7,12 @@ const UserSchema = new Schema({
   mobileNumber: { type: String, required: true },
   sanadId: { type: String, required: true, unique: true },
   age: { type: Number, required: true },
+  password: { type: String, required: true }, // Hashed password
   paidAmount: { type: Number, default: 0 },
   isPaid: { type: Boolean, default: false },
   paymentDate: { type: Date },
+  resetToken: { type: String },
+  resetTokenExpiry: { type: Date },
 }, { timestamps: true });
 
 export const User = models.User || model('User', UserSchema);
@@ -18,6 +21,7 @@ const HelpRequestSchema = new Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
   mobileNumber: { type: String, required: true },
+  userId: { type: Schema.Types.ObjectId, ref: 'User' }, // Link to user
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
 }, { timestamps: true });
 

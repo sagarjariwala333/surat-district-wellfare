@@ -67,6 +67,9 @@ export default function RootLayout({
 
             <div className="flex items-center space-x-2">
               <Button asChild variant="outline" size="sm" className="hidden md:inline-flex">
+                <Link href="/login">User Login</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="hidden md:inline-flex">
                 <Link href="/admin">Admin Panel</Link>
               </Button>
 
